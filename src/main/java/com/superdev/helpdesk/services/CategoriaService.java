@@ -1,5 +1,6 @@
 package com.superdev.helpdesk.services;
 
+import com.superdev.helpdesk.dtos.categoria.CategoriaAtualizarDto;
 import com.superdev.helpdesk.dtos.categoria.CategoriaCriarDto;
 import com.superdev.helpdesk.models.Categoria;
 import com.superdev.helpdesk.repositories.CategoriaRepository;
@@ -15,18 +16,40 @@ public class CategoriaService {
         this.repository = repository;
     }
 
-    public List<Categoria> listar() {
+    public List<Categoria> listar(){
         return this.repository.findAll();
     }
 
     public Categoria criar(CategoriaCriarDto dado){
-      var  categoria = Categoria.builder()
+        var categoria = Categoria.builder()
                 .nome(dado.nome())
                 .descricao(dado.descricao())
                 .ativa(true)
                 .build();
-      return this.repository.save(categoria);
 
+        return this.repository.save(categoria);
     }
-    
+
+    public Categoria atualizar(int id, CategoriaAtualizarDto dado){
+        var categoria = repository.findById(id)
+                .orElseThrow();
+
+        categoria.setNome(dado.nome());
+        categoria.setDescricao(dado.descricao());
+
+        return repository.save(categoria);
+    }
+
+    public Categoria apagar(int id){
+        var categoria = repository.findById(id).orElseThrow();
+
+        categoria.setAtiva(false);
+        return repository.save(categoria);
+    }
+
+    public Categoria obterPorId(int id){
+        var categoria = repository.findById(id).orElseThrow();
+        return categoria;
+    }
 }
+

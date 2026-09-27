@@ -1,31 +1,46 @@
 package com.superdev.helpdesk.controllers;
 
+import com.superdev.helpdesk.dtos.categoria.CategoriaAtualizarDto;
 import com.superdev.helpdesk.dtos.categoria.CategoriaCriarDto;
 import com.superdev.helpdesk.models.Categoria;
 import com.superdev.helpdesk.services.CategoriaService;
 import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping
-
+@RequestMapping("/categorias")
 public class CategoriaController {
     private final CategoriaService service;
 
-    public CategoriaController(CategoriaService service){
+    public CategoriaController(CategoriaService service) {
         this.service = service;
     }
 
     @GetMapping
     public List<Categoria> listar(){
-        return this.service.listar();
-    }
-    @PostMapping
-    public Categoria criar(@RequestBody @Valid CategoriaCriarDto dto){
-        return  this.service.criar(dto);
+        return service.listar();
     }
 
+    @PostMapping
+    public Categoria criar(@RequestBody @Valid CategoriaCriarDto dto){
+        return service.criar(dto);
+    }
+
+    @PutMapping("/{id}")
+    public Categoria atualizar(@PathVariable int id,
+                               @RequestBody @Valid CategoriaAtualizarDto dto){
+        return service.atualizar(id, dto);
+    }
+
+    @DeleteMapping("/{id}")
+    public Categoria apagar(@PathVariable int id){
+        return service.apagar(id);
+    }
+
+    @GetMapping("/{id}")
+    public Categoria obterPorId(@PathVariable int id){
+        return service.obterPorId(id);
+    }
 }
