@@ -3,13 +3,11 @@ package com.superdev.helpdesk.dtos.categoria;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-/*
-* Record é uma classe para armazenar dados imutáveis
-* */
 public record CategoriaCriarDto (
+    //Record é classe para armazenar dados imutaveis
     @NotBlank @Size(min=2, max=60)
     String nome,
 
-    @Size(max = 255)
+    @Size(max= 255)
     String descricao
 ){}

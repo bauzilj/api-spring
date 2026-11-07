@@ -1,0 +1,14 @@
+/* Status badges, priority colors and the two-column layout when a ticket is open. */
+.badge { border-radius: 9999px; padding: 2px 8px; font-size: 12px; font-weight: 500; background: #e4e9e9; }
+.s-ABERTO { background: #fdeccd; }
+.s-EM_ANALISE { background: #d6e6ee; }
+.s-RESOLVIDO { background: #d4ebdc; }
+.s-CANCELADO { background: #ececec; color: var(--color-muted); }
+
+.p-ALTA { color: var(--color-danger); }
+.p-MEDIA { color: #a86a0a; }
+.p-BAIXA { color: var(--color-ok); }
+
+@media (min-width: 1024px) {
+  .has-detail { grid-template-columns: minmax(0, 1fr) 360px; }
+}

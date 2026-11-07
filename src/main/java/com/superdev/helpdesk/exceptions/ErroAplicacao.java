@@ -1,24 +1,25 @@
 package com.superdev.helpdesk.exceptions;
+//base de excecoes de dominio. os servicos lançam  estas excecoes sem saber
+//nada de http; o tratadorDeErros traduz cada um para um status+ corpo padrao
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-/**
- *  Base das execoes de dominio. Os servicos lancam estas excepcoes sem saber
- *  nada de HTTP; o TratadorDeErros traduz cada uma para status + corpo padrao
- * */
 @Getter
-public class ErroAplicacao  extends  RuntimeException{
-    // Atttributos protegidos com final para n permitir a mudanca
-    // Com Getter (que permitira somente a leitura), sem Setter + final
+public class ErroAplicacao extends RuntimeException {
+    //atributos protegidos com final para nao permitir a mudança
+    //com getter(que permite somente a leitura) sem Setter + final
     private final HttpStatus status;
     private final String codigo;
 
-    //Construtor
-    protected  ErroAplicacao(HttpStatus status, String codigo, String mensagem){
-        // Passando para o construtor da classe pai(RuntimeExeption) a mensagem
-        super(mensagem);
+    //constructor
+    protected ErroAplicacao(HttpStatus status, String codigo, String mmensagem) {
+        //passando para o construtor da classe Pai(RunTImeException) a mesnsagem
+        super(mmensagem);
         this.status = status;
         this.codigo = codigo;
     }
+
+
+
 }

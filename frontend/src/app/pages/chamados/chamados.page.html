@@ -1,0 +1,61 @@
+<h2 class="mb-4 text-2xl font-bold">Chamados</h2>
+@if (error()) { <p class="alert">{{ error() }}</p> }
+
+<form class="panel" [formGroup]="form" (ngSubmit)="save()">
+  <h3 class="mb-3 font-bold">{{ editing() ? 'Editar chamado' : 'Novo chamado' }}</h3>
+  <label class="field">Título <input class="input" formControlName="titulo" /></label>
+  <label class="field">Descrição <textarea class="input" rows="3" formControlName="descricao"></textarea></label>
+  <div class="grid gap-x-3 sm:grid-cols-2 lg:grid-cols-3">
+    <label class="field">Prioridade
+      <select class="input" formControlName="prioridade">
+        @for (p of prioridades; track p) { <option [value]="p">{{ p | label }}</option> }
+      </select>
+    </label>
+    <label class="field">Status
+      <select class="input" formControlName="status">
+        @for (s of statuses; track s) { <option [value]="s">{{ s | label }}</option> }
+      </select>
+    </label>
+    <label class="field">Prazo <input class="input" type="date" formControlName="prazo" /></label>
+    <label class="field">Categoria
+      <select class="input" formControlName="categoriaId">
+        <option [ngValue]="null" disabled>Selecione…</option>
+        @for (c of categorias(); track c.id) { <option [ngValue]="c.id">{{ c.nome }}</option> }
+      </select>
+    </label>
+    <label class="field">Solicitante
+      <select class="input" formControlName="solicitanteId">
+        <option [ngValue]="null" disabled>Selecione…</option>
+        @for (u of usuarios(); track u.id) { <option [ngValue]="u.id">{{ u.nome }}</option> }
+      </select>
+    </label>
+  </div>
+  <div class="flex gap-2">
+    <button class="btn btn-primary" [disabled]="form.invalid">Salvar chamado</button>
+    @if (editing()) { <button class="btn" type="button" (click)="reset()">Cancelar</button> }
+  </div>
+</form>
+
+<div class="overflow-x-auto">
+  <table class="tbl">
+    <thead><tr><th>Título</th><th>Prioridade</th><th>Status</th><th>Prazo</th><th>Categoria</th><th>Solicitante</th><th></th></tr></thead>
+    <tbody>
+      @for (c of items(); track c.id) {
+        <tr>
+          <td>{{ c.titulo }}</td>
+          <td>{{ c.prioridade | label }}</td>
+          <td>{{ c.status | label }}</td>
+          <td>{{ c.prazo | date: 'dd/MM/yyyy' }}</td>
+          <td>{{ c.categoria?.nome }}</td>
+          <td>{{ c.solicitante?.nome }}</td>
+          <td class="flex gap-1.5 whitespace-nowrap">
+            <button class="btn btn-sm" (click)="edit(c)">Editar</button>
+            <button class="btn btn-sm btn-danger" (click)="remove(c)">Excluir</button>
+          </td>
+        </tr>
+      } @empty {
+        <tr><td colspan="7" class="empty">Nenhum chamado cadastrado. Crie categorias e usuários primeiro e depois adicione um acima.</td></tr>
+      }
+    </tbody>
+  </table>
+</div>

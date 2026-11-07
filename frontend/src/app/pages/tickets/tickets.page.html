@@ -1,0 +1,114 @@
+<header class="mb-2 flex flex-wrap items-center justify-between gap-3">
+  <h2 class="text-2xl font-bold">Tickets</h2>
+  <div class="flex items-center gap-2">
+    <select class="input w-auto" aria-label="Filtrar por status" [value]="filter()" (change)="filter.set($any($event.target).value)">
+      <option value="TODOS">Todos os status</option>
+      @for (s of statuses; track s) { <option [value]="s">{{ s | label }}</option> }
+    </select>
+    <button class="btn btn-primary" (click)="creating.set(!creating())">
+      {{ creating() ? 'Fechar formulário' : 'Novo ticket' }}
+    </button>
+  </div>
+</header>
+
+@if (error()) { <p class="alert">{{ error() }}</p> }
+
+@if (creating()) {
+  <form class="panel mt-3" [formGroup]="createForm" (ngSubmit)="create()">
+    <h3 class="mb-3 font-bold">Novo ticket</h3>
+    <label class="field">Título <input class="input" formControlName="titulo" /></label>
+    <label class="field">Descrição <textarea class="input" rows="3" formControlName="descricao"></textarea></label>
+    <div class="grid gap-x-3 sm:grid-cols-2">
+      <label class="field">Setor
+        <select class="input" formControlName="setor">
+          @for (s of setores; track s) { <option [value]="s">{{ s | label }}</option> }
+        </select>
+      </label>
+      <label class="field">Solicitante
+        <select class="input" formControlName="solicitante_id">
+          <option [ngValue]="null">Nenhum</option>
+          @for (u of solicitantes(); track u.id) { <option [ngValue]="u.id">{{ u.nome }}</option> }
+        </select>
+      </label>
+    </div>
+    <button class="btn btn-primary" [disabled]="createForm.invalid">Abrir ticket</button>
+  </form>
+}
+
+<div class="mt-3 grid items-start gap-5" [class.has-detail]="selected()">
+  <div class="overflow-x-auto">
+    <table class="tbl">
+      <thead>
+        <tr><th>Protocolo</th><th>Título</th><th>Status</th><th>Prioridade</th><th>Setor</th><th>Atendente</th><th>Aberto em</th></tr>
+      </thead>
+      <tbody>
+        @for (t of visible(); track t.id) {
+          <tr class="cursor-pointer hover:bg-teal-50" [class.bg-teal-50]="selected()?.id === t.id" (click)="select(t)">
+            <td>{{ t.numeroProtocolo }}</td>
+            <td>{{ t.titulo }}</td>
+            <td><span class="badge s-{{ t.status }}">{{ t.status | label }}</span></td>
+            <td><span class="font-medium p-{{ t.prioridade }}">{{ t.prioridade | label }}</span></td>
+            <td>{{ t.setor | label }}</td>
+            <td>{{ t.atendente?.nome ?? '—' }}</td>
+            <td>{{ t.dataCriacao | date: 'dd/MM/yyyy HH:mm' }}</td>
+          </tr>
+        } @empty {
+          <tr><td colspan="7" class="empty">Nenhum ticket encontrado. Use "Novo ticket" para abrir um.</td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (selected(); as t) {
+    <aside class="relative rounded-md border border-line bg-white p-5">
+      <button class="absolute right-2 top-2 cursor-pointer px-2 text-xl leading-none text-muted" aria-label="Fechar detalhes" (click)="selected.set(null)">×</button>
+      <h3 class="pr-6 font-bold">{{ t.titulo }}</h3>
+      <p class="mb-3 text-sm text-muted">{{ t.numeroProtocolo }} · {{ t.setor | label }} · solicitado por {{ t.solicitante?.nome ?? 'desconhecido' }}</p>
+      <p class="text-sm">{{ t.descricao }}</p>
+
+      @if (t.descricaoSolucao) {
+        <h4 class="mb-1 mt-4 text-sm font-bold">Solução</h4>
+        <p class="text-sm">{{ t.descricaoSolucao }}</p>
+      }
+      @if (t.motivoCancelamento) {
+        <h4 class="mb-1 mt-4 text-sm font-bold">Motivo do cancelamento</h4>
+        <p class="text-sm">{{ t.motivoCancelamento }}</p>
+      }
+
+      @if (isOpen(t)) {
+        <section class="mt-4 border-t border-line pt-3">
+          <h4 class="mb-1.5 text-sm font-bold">Atribuir atendente</h4>
+          <div class="flex gap-2">
+            <select class="input" [formControl]="assignCtrl">
+              <option [ngValue]="null" disabled>Selecione o atendente…</option>
+              @for (u of atendentes(); track u.id) { <option [ngValue]="u.id">{{ u.nome }}</option> }
+            </select>
+            <button class="btn" [disabled]="assignCtrl.value === null" (click)="associar(t)">Atribuir</button>
+          </div>
+        </section>
+
+        <section class="mt-4 border-t border-line pt-3">
+          <h4 class="mb-1.5 text-sm font-bold">Prioridade</h4>
+          <div class="flex gap-2">
+            <select class="input" [formControl]="prioCtrl">
+              @for (p of prioridades; track p) { <option [value]="p">{{ p | label }}</option> }
+            </select>
+            <button class="btn whitespace-nowrap" (click)="prioridade(t)">Definir prioridade</button>
+          </div>
+        </section>
+
+        <section class="mt-4 border-t border-line pt-3">
+          <h4 class="mb-1.5 text-sm font-bold">Resolver</h4>
+          <textarea class="input mb-2" rows="3" [formControl]="solucaoCtrl" placeholder="Descreva a solução (mínimo de 10 caracteres)"></textarea>
+          <button class="btn btn-primary" [disabled]="solucaoCtrl.invalid" (click)="resolver(t)">Resolver ticket</button>
+        </section>
+
+        <section class="mt-4 border-t border-line pt-3">
+          <h4 class="mb-1.5 text-sm font-bold">Cancelar</h4>
+          <textarea class="input mb-2" rows="2" [formControl]="motivoCtrl" placeholder="Motivo do cancelamento (mínimo de 10 caracteres)"></textarea>
+          <button class="btn btn-danger" [disabled]="motivoCtrl.invalid" (click)="cancelar(t)">Cancelar ticket</button>
+        </section>
+      }
+    </aside>
+  }
+</div>

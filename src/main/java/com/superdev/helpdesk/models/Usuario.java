@@ -6,39 +6,43 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-
 @Getter
 @Setter
+@Table(name = "usuarios")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "usuarios")
 public class Usuario {
-    @Id // PK da tabela
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Gerar o id automagicamente
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(length = 100, nullable = false)
+    @Column(length = 60, nullable = false)
     private String nome;
 
-    @Column(length = 150, nullable = false, unique = true)
+    @Column(length = 255, nullable = false)
     private String email;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20, nullable = false)
     private Papel papel;
 
+
+
     @Column(nullable = false)
-    private boolean ativo;
+    private Boolean ativo;
 
     @Column(name = "criado_em", nullable = false, updatable = false)
     private LocalDateTime criadoEm;
 
-    // Executado pelo JPA antes do INSERT; preenche os valores padrões
     @PrePersist
-    void aoCriar(){
-        if(criadoEm == null)
+    public void aoCriar() {
+        if (criadoEm == null) {
             criadoEm = LocalDateTime.now();
+        }
+        if (ativo == null) {
+            ativo = true;
+        }
     }
 }

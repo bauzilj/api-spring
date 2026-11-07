@@ -1,0 +1,41 @@
+<h2 class="mb-4 text-2xl font-bold">Usuários</h2>
+@if (error()) { <p class="alert">{{ error() }}</p> }
+
+<form class="panel" [formGroup]="form" (ngSubmit)="save()">
+  <h3 class="mb-3 font-bold">{{ editing() ? 'Editar usuário' : 'Novo usuário' }}</h3>
+  <label class="field">Nome <input class="input" formControlName="nome" /></label>
+  <label class="field">E-mail <input class="input" type="email" formControlName="email" /></label>
+  <label class="field">Papel
+    <select class="input" formControlName="papel">
+      <option value="SOLICITANTE">Solicitante</option>
+      <option value="ATENDENTE">Atendente</option>
+    </select>
+  </label>
+  <div class="flex gap-2">
+    <button class="btn btn-primary" [disabled]="form.invalid">Salvar usuário</button>
+    @if (editing()) { <button class="btn" type="button" (click)="reset()">Cancelar</button> }
+  </div>
+</form>
+
+<div class="overflow-x-auto">
+  <table class="tbl">
+    <thead><tr><th>Nome</th><th>E-mail</th><th>Papel</th><th>Ativo</th><th>Criado em</th><th></th></tr></thead>
+    <tbody>
+      @for (u of items(); track u.id) {
+        <tr>
+          <td>{{ u.nome }}</td>
+          <td>{{ u.email }}</td>
+          <td>{{ u.papel | label }}</td>
+          <td>{{ u.ativo ? 'Sim' : 'Não' }}</td>
+          <td>{{ u.criadoEm | date: 'dd/MM/yyyy' }}</td>
+          <td class="flex gap-1.5 whitespace-nowrap">
+            <button class="btn btn-sm" (click)="edit(u)">Editar</button>
+            <button class="btn btn-sm btn-danger" (click)="remove(u)">Excluir</button>
+          </td>
+        </tr>
+      } @empty {
+        <tr><td colspan="6" class="empty">Nenhum usuário cadastrado. Adicione o primeiro acima.</td></tr>
+      }
+    </tbody>
+  </table>
+</div>

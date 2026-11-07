@@ -17,4 +17,5 @@ public record TicketRespostaDto(
         LocalDateTime criadoEm,
         LocalDateTime atualizadoEm
 ) {
+
 }

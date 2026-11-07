@@ -1,9 +1,9 @@
-package com.superdev.helpdesk.controllers;
+package com.superdev.helpdesk.controller;
 
 import com.superdev.helpdesk.dtos.usuario.UsuarioAtualizarDto;
 import com.superdev.helpdesk.dtos.usuario.UsuarioCriarDto;
 import com.superdev.helpdesk.models.Usuario;
-import com.superdev.helpdesk.services.UsuarioService;
+import com.superdev.helpdesk.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,28 +19,27 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public List<Usuario> listar(){
+    public List<Usuario> listar() {
         return service.listar();
     }
 
+    @GetMapping("/{id}")
+    public Usuario obterPorId(@PathVariable int id) {
+        return service.obterPorId(id);
+    }
+
     @PostMapping
-    public Usuario criar(@RequestBody @Valid UsuarioCriarDto dto){
+    public Usuario criar(@RequestBody @Valid UsuarioCriarDto dto) {
         return service.criar(dto);
     }
 
     @PutMapping("/{id}")
-    public Usuario atualizar(@PathVariable int id,
-                             @RequestBody @Valid UsuarioAtualizarDto dto){
+    public Usuario atualizar(@PathVariable int id, @RequestBody @Valid UsuarioAtualizarDto dto) {
         return service.atualizar(id, dto);
     }
 
     @DeleteMapping("/{id}")
-    public Usuario apagar(@PathVariable int id){
+    public Usuario apagar(@PathVariable int id) {
         return service.apagar(id);
-    }
-
-    @GetMapping("/{id}")
-    public Usuario obterPorId(@PathVariable int id){
-        return service.obterPorId(id);
     }
 }
